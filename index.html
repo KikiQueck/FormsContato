@@ -388,96 +388,100 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <script>
-    /* ═══════════════════════════════════════════════════════
-       🔥 FIREBASE — config carregada via /api/firebaseConfig
-          (Vercel injeta as variáveis de ambiente no servidor)
-       ═══════════════════════════════════════════════════════ */
+<script>
+  /* ═══════════════════════════════════════════════════════
+     🔥 FIREBASE — config carregada via /api/firebaseConfig
+     ═══════════════════════════════════════════════════════ */
 
-    let db = null; // será inicializado após o fetch
+  let db = null;
+  let firebaseReady = false; // 👈 flag de controle
 
-    async function initFirebase() {
-      try {
-        const res = await fetch('/api/firebaseConfig');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const firebaseConfig = await res.json();
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-      } catch (err) {
-        console.error('Falha ao carregar configuração do Firebase:', err);
-        showToast('Erro ao conectar com o servidor. Tente novamente.', false);
-      }
+  async function initFirebase() {
+    try {
+      const res = await fetch('/api/firebaseConfig');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const firebaseConfig = await res.json();
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      firebaseReady = true; // 👈 marca como pronto
+    } catch (err) {
+      console.error('Falha ao carregar configuração do Firebase:', err);
+      showToast('Erro ao conectar com o servidor. Tente novamente.', false);
+      // Reabilita o botão se falhar na inicialização
+      document.getElementById('submitBtn').disabled = false;
     }
+  }
 
-    /* ── CEP MASK ────────────────────────────────────────── */
-    document.getElementById('cep').addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 8);
-      if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
-      this.value = v;
-    });
+  /* ── CEP MASK ────────────────────────────────────────── */
+  document.getElementById('cep').addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
+    this.value = v;
+  });
 
-    /* ── TOAST HELPER ────────────────────────────────────── */
-    function showToast(msg, success = true) {
-      const el   = document.getElementById('liveToast');
-      const icon = document.getElementById('toastIcon');
-      const text = document.getElementById('toastMsg');
-      el.classList.toggle('success', success);
-      el.classList.toggle('error',  !success);
-      icon.textContent = success ? '✅' : '❌';
-      text.textContent = msg;
-      bootstrap.Toast.getOrCreateInstance(el).show();
-    }
+  /* ── TOAST HELPER ────────────────────────────────────── */
+  function showToast(msg, success = true) {
+    const el   = document.getElementById('liveToast');
+    const icon = document.getElementById('toastIcon');
+    const text = document.getElementById('toastMsg');
+    el.classList.toggle('success', success);
+    el.classList.toggle('error',  !success);
+    icon.textContent = success ? '✅' : '❌';
+    text.textContent = msg;
+    bootstrap.Toast.getOrCreateInstance(el).show();
+  }
 
-    /* ── FORM SUBMIT ─────────────────────────────────────── */
-    document.getElementById('contactForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+  /* ── FORM SUBMIT ─────────────────────────────────────── */
+  document.getElementById('contactForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-      const form    = this;
-      const btn     = document.getElementById('submitBtn');
-      const btnText = document.getElementById('btnText');
-      const btnSpin = document.getElementById('btnSpinner');
+    const form    = this;
+    const btn     = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpin = document.getElementById('btnSpinner');
 
-      // Validação Bootstrap
-      form.classList.add('was-validated');
-      if (!form.checkValidity()) return;
+    // Validação Bootstrap
+    form.classList.add('was-validated');
+    if (!form.checkValidity()) return;
 
-      // Garante que o Firebase foi inicializado
-      if (!db) {
-        showToast('Firebase ainda não inicializado. Aguarde e tente novamente.', false);
-        return;
-      }
-
-      // Estado de carregamento
+    // 👇 Se ainda não inicializou, tenta inicializar agora e aguarda
+    if (!firebaseReady) {
       btn.disabled = true;
       btnText.classList.add('d-none');
       btnSpin.classList.remove('d-none');
 
-      const payload = {
-        firstName: document.getElementById('firstName').value.trim(),
-        lastName:  document.getElementById('lastName').value.trim(),
-        cep:       document.getElementById('cep').value.trim(),
-        number:    document.getElementById('number').value.trim(),
-        comments:  document.getElementById('comments').value.trim(),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
+      await initFirebase(); // tenta de novo
 
-      try {
-        await db.collection('contacts').add(payload);
-        showToast('Mensagem enviada com sucesso! Em breve retornaremos. 🎉', true);
-        form.reset();
-        form.classList.remove('was-validated');
-      } catch (err) {
-        console.error(err);
-        showToast('Erro ao enviar. Verifique as configurações do Firebase.', false);
-      } finally {
+      if (!firebaseReady) {
+        showToast('Não foi possível conectar ao servidor. Tente novamente.', false);
         btn.disabled = false;
         btnText.classList.remove('d-none');
         btnSpin.classList.add('d-none');
+        return;
       }
-    });
+    }
 
-    // Inicializa o Firebase ao carregar a página
-    initFirebase();
-  </script>
+    // Estado de carregamento
+    btn.disabled = true;
+    btnText.classList.add('d-none');
+    btnSpin.classList.remove('d-none');
+
+    const payload = {
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName:  document.getElementById('lastName').value.trim(),
+      cep:       document.getElementById('cep').value.trim(),
+      number:    document.getElementById('number').value.trim(),
+      comments:  document.getElementById('comments').value.trim(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      await db.collection('contacts').add(payload);
+      showToast('Mensagem enviada com sucesso! Em breve retornaremos. 🎉', true);
+      form.reset();
+      form.classList.remove('was-validated');
+    } catch (err) {
+      console.error(err);
+      showToast('Erro ao enviar. Verifique as configurações do Firebase.', false);
 </body>
 </html>
