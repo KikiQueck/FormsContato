@@ -389,36 +389,24 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-  /* ═══════════════════════════════════════════════════════
-     🔥 FIREBASE — config carregada via /api/firebaseConfig
-     ═══════════════════════════════════════════════════════ */
+  firebase.initializeApp({
+    apiKey:            "AIzaSyAwRRxzbhptvZVdqrt6qEVVxgBV-vYm7hM",
+    authDomain:        "formcontato-90129.firebaseapp.com",
+    projectId:         "formcontato-90129",
+    storageBucket:     "formcontato-90129.firebasestorage.app",
+    messagingSenderId: "273438604324",
+    appId:             "1:273438604324:web:ac5cba74c03f0b21c06cb1"
+  });
+  const db = firebase.firestore();
 
-  let db = null;
-  let firebaseReady = false; // 👈 flag de controle
-
-async function initFirebase() {
-  try {
-    const res = await fetch('/api/firebaseConfig');
-    console.log('Status da resposta:', res.status);
-    const firebaseConfig = await res.json();
-    console.log('Config recebida:', firebaseConfig); // 👈 veja o que chega
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    firebaseReady = true;
-  } catch (err) {
-    console.error('Erro detalhado:', err); // 👈 erro real aqui
-    ...
-  }
-}
-
-  /* ── CEP MASK ────────────────────────────────────────── */
+  /* ── CEP MASK ── */
   document.getElementById('cep').addEventListener('input', function () {
     let v = this.value.replace(/\D/g, '').slice(0, 8);
     if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
     this.value = v;
   });
 
-  /* ── TOAST HELPER ────────────────────────────────────── */
+  /* ── TOAST HELPER ── */
   function showToast(msg, success = true) {
     const el   = document.getElementById('liveToast');
     const icon = document.getElementById('toastIcon');
@@ -430,7 +418,7 @@ async function initFirebase() {
     bootstrap.Toast.getOrCreateInstance(el).show();
   }
 
-  /* ── FORM SUBMIT ─────────────────────────────────────── */
+  /* ── FORM SUBMIT ── */
   document.getElementById('contactForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -439,28 +427,9 @@ async function initFirebase() {
     const btnText = document.getElementById('btnText');
     const btnSpin = document.getElementById('btnSpinner');
 
-    // Validação Bootstrap
     form.classList.add('was-validated');
     if (!form.checkValidity()) return;
 
-    // 👇 Se ainda não inicializou, tenta inicializar agora e aguarda
-    if (!firebaseReady) {
-      btn.disabled = true;
-      btnText.classList.add('d-none');
-      btnSpin.classList.remove('d-none');
-
-      await initFirebase(); // tenta de novo
-
-      if (!firebaseReady) {
-        showToast('Não foi possível conectar ao servidor. Tente novamente.', false);
-        btn.disabled = false;
-        btnText.classList.remove('d-none');
-        btnSpin.classList.add('d-none');
-        return;
-      }
-    }
-
-    // Estado de carregamento
     btn.disabled = true;
     btnText.classList.add('d-none');
     btnSpin.classList.remove('d-none');
@@ -481,6 +450,29 @@ async function initFirebase() {
       form.classList.remove('was-validated');
     } catch (err) {
       console.error(err);
-      showToast('Erro ao enviar. Verifique as configurações do Firebase.', false);
+      showToast('Erro ao enviar: ' + err.message, false);
+    } finally {
+      btn.disabled = false;
+      btnText.classList.remove('d-none');
+      btnSpin.classList.add('d-none');
+    }
+  });
+</script>
+```
+
+Agora acesse o **console do Firebase** e verifique as regras do Firestore:
+
+1. [console.firebase.google.com](https://console.firebase.google.com) → projeto `formcontato-90129`
+2. **Firestore Database → Regras**
+3. Confirme que está assim:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
 </body>
 </html>
