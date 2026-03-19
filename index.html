@@ -5,15 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contato</title>
 
-  <!-- Google Fonts: Cormorant Garamond + Nunito -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
 
   <style>
-    /* ── TOKENS ─────────────────────────────────────────── */
     :root {
       --c1: #ffe4e8;
       --c2: #ffc2cb;
@@ -31,7 +27,6 @@
       --radius: 20px;
     }
 
-    /* ── RESET & BASE ────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -50,7 +45,6 @@
       overflow-x: hidden;
     }
 
-    /* ── DECORATIVE CIRCLES ──────────────────────────────── */
     body::before, body::after {
       content: '';
       position: fixed;
@@ -76,7 +70,6 @@
       50%       { transform: scale(1.1); opacity: 1;  }
     }
 
-    /* ── CARD ────────────────────────────────────────────── */
     .contact-card {
       position: relative;
       z-index: 1;
@@ -97,7 +90,6 @@
       to   { opacity: 1; transform: translateY(0)    scale(1);   }
     }
 
-    /* ── CARD HEADER ─────────────────────────────────────── */
     .card-header-custom {
       position: relative;
       padding: 44px 48px 32px;
@@ -110,11 +102,8 @@
       position: absolute;
       inset: 0;
       background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 18px,
-        rgba(255,255,255,0.12) 18px,
-        rgba(255,255,255,0.12) 19px
+        45deg, transparent, transparent 18px,
+        rgba(255,255,255,0.12) 18px, rgba(255,255,255,0.12) 19px
       );
     }
     .badge-label {
@@ -140,10 +129,7 @@
       color: var(--text-dark);
       text-shadow: 0 2px 12px rgba(200,100,120,0.15);
     }
-    .card-title span {
-      color: var(--c5);
-      font-style: italic;
-    }
+    .card-title span { color: var(--c5); font-style: italic; }
     .card-subtitle {
       margin-top: 10px;
       font-size: .9rem;
@@ -152,14 +138,9 @@
       letter-spacing: .02em;
     }
 
-    /* ── FORM AREA ───────────────────────────────────────── */
-    .card-body-custom {
-      padding: 40px 48px 48px;
-    }
+    .card-body-custom { padding: 40px 48px 48px; }
 
-    /* ── FLOATING LABEL OVERRIDE ─────────────────────────── */
     .form-floating { margin-bottom: 20px; }
-
     .form-floating > .form-control,
     .form-floating > .form-select {
       background: rgba(255,255,255,0.75);
@@ -171,13 +152,11 @@
       transition: border-color .25s, background .25s, box-shadow .25s;
       height: 58px;
     }
-
     .form-floating > textarea.form-control {
       height: 130px;
       resize: none;
       padding-top: 28px;
     }
-
     .form-floating > .form-control:focus,
     .form-floating > .form-select:focus {
       background: rgba(255,255,255,0.92);
@@ -186,7 +165,6 @@
       color: var(--text-dark);
       outline: none;
     }
-
     .form-floating > .form-control::placeholder { color: transparent; }
     .form-floating > label {
       color: var(--text-soft);
@@ -201,14 +179,11 @@
       font-size: .76rem;
       font-weight: 600;
     }
-
-    /* Autofill fix */
     .form-control:-webkit-autofill {
       -webkit-text-fill-color: var(--text-dark) !important;
       -webkit-box-shadow: 0 0 0 1000px rgba(255,240,242,.9) inset !important;
     }
 
-    /* ── ICON INSIDE FIELD ───────────────────────────────── */
     .input-icon-wrap { position: relative; }
     .input-icon-wrap .bi {
       position: absolute;
@@ -222,7 +197,6 @@
     }
     .input-icon-wrap textarea ~ .bi { top: 24px; transform: none; }
 
-    /* ── DIVIDER ─────────────────────────────────────────── */
     .section-label {
       font-size: .7rem;
       font-weight: 700;
@@ -242,7 +216,6 @@
       background: linear-gradient(to right, rgba(232,96,122,.3), transparent);
     }
 
-    /* ── SUBMIT BUTTON ───────────────────────────────────── */
     .btn-submit {
       width: 100%;
       padding: 16px;
@@ -274,7 +247,6 @@
     .btn-submit:active { transform: translateY(0); }
     .btn-submit .spinner-border { width: 1.1rem; height: 1.1rem; border-width: 2px; }
 
-    /* ── TOAST ───────────────────────────────────────────── */
     .toast-container { z-index: 9999; }
     .toast-custom {
       background: rgba(255,240,243,0.97);
@@ -288,7 +260,6 @@
     .toast-custom.error   { border-color: rgba(232,96,122,.45); }
     .toast-icon { font-size: 1.3rem; }
 
-    /* ── RESPONSIVE ──────────────────────────────────────── */
     @media (max-width: 576px) {
       .card-header-custom, .card-body-custom { padding-left: 24px; padding-right: 24px; }
     }
@@ -310,7 +281,6 @@
   <!-- Card -->
   <div class="contact-card">
 
-    <!-- Header -->
     <div class="card-header-custom">
       <div class="badge-label">
         <i class="bi bi-envelope-heart-fill"></i> Entre em contato
@@ -319,11 +289,9 @@
       <p class="card-subtitle">Preencha o formulário e retornaremos em breve.</p>
     </div>
 
-    <!-- Body -->
     <div class="card-body-custom">
       <form id="contactForm" novalidate>
 
-        <!-- Dados pessoais -->
         <div class="section-label">Dados Pessoais</div>
         <div class="row g-3 mb-1">
           <div class="col-sm-6">
@@ -342,7 +310,6 @@
           </div>
         </div>
 
-        <!-- Endereço -->
         <div class="section-label mt-3">Endereço</div>
         <div class="row g-3 mb-1">
           <div class="col-sm-7">
@@ -362,7 +329,6 @@
           </div>
         </div>
 
-        <!-- Comentários -->
         <div class="section-label mt-3">Mensagem</div>
         <div class="form-floating input-icon-wrap">
           <textarea class="form-control" id="comments" placeholder="Comentários" required minlength="10"></textarea>
@@ -388,91 +354,78 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<script>
-  firebase.initializeApp({
-    apiKey:            "AIzaSyAwRRxzbhptvZVdqrt6qEVVxgBV-vYm7hM",
-    authDomain:        "formcontato-90129.firebaseapp.com",
-    projectId:         "formcontato-90129",
-    storageBucket:     "formcontato-90129.firebasestorage.app",
-    messagingSenderId: "273438604324",
-    appId:             "1:273438604324:web:ac5cba74c03f0b21c06cb1"
-  });
-  const db = firebase.firestore();
+  <script>
+    // ── FIREBASE INIT ──────────────────────────────────────
+    firebase.initializeApp({
+      apiKey:            "AIzaSyAwRRxzbhptvZVdqrt6qEVVxgBV-vYm7hM",
+      authDomain:        "formcontato-90129.firebaseapp.com",
+      projectId:         "formcontato-90129",
+      storageBucket:     "formcontato-90129.firebasestorage.app",
+      messagingSenderId: "273438604324",
+      appId:             "1:273438604324:web:ac5cba74c03f0b21c06cb1"
+    });
 
-  /* ── CEP MASK ── */
-  document.getElementById('cep').addEventListener('input', function () {
-    let v = this.value.replace(/\D/g, '').slice(0, 8);
-    if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
-    this.value = v;
-  });
+    const db = firebase.firestore();
 
-  /* ── TOAST HELPER ── */
-  function showToast(msg, success = true) {
-    const el   = document.getElementById('liveToast');
-    const icon = document.getElementById('toastIcon');
-    const text = document.getElementById('toastMsg');
-    el.classList.toggle('success', success);
-    el.classList.toggle('error',  !success);
-    icon.textContent = success ? '✅' : '❌';
-    text.textContent = msg;
-    bootstrap.Toast.getOrCreateInstance(el).show();
-  }
+    // ── CEP MASK ───────────────────────────────────────────
+    document.getElementById('cep').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+      this.value = v;
+    });
 
-  /* ── FORM SUBMIT ── */
-  document.getElementById('contactForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const form    = this;
-    const btn     = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const btnSpin = document.getElementById('btnSpinner');
-
-    form.classList.add('was-validated');
-    if (!form.checkValidity()) return;
-
-    btn.disabled = true;
-    btnText.classList.add('d-none');
-    btnSpin.classList.remove('d-none');
-
-    const payload = {
-      firstName: document.getElementById('firstName').value.trim(),
-      lastName:  document.getElementById('lastName').value.trim(),
-      cep:       document.getElementById('cep').value.trim(),
-      number:    document.getElementById('number').value.trim(),
-      comments:  document.getElementById('comments').value.trim(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    try {
-      await db.collection('contacts').add(payload);
-      showToast('Mensagem enviada com sucesso! Em breve retornaremos. 🎉', true);
-      form.reset();
-      form.classList.remove('was-validated');
-    } catch (err) {
-      console.error(err);
-      showToast('Erro ao enviar: ' + err.message, false);
-    } finally {
-      btn.disabled = false;
-      btnText.classList.remove('d-none');
-      btnSpin.classList.add('d-none');
+    // ── TOAST HELPER ───────────────────────────────────────
+    function showToast(msg, success) {
+      const el   = document.getElementById('liveToast');
+      const icon = document.getElementById('toastIcon');
+      const text = document.getElementById('toastMsg');
+      el.classList.remove('success', 'error');
+      el.classList.add(success ? 'success' : 'error');
+      icon.textContent = success ? '✅' : '❌';
+      text.textContent = msg;
+      bootstrap.Toast.getOrCreateInstance(el).show();
     }
-  });
-</script>
-```
 
-Agora acesse o **console do Firebase** e verifique as regras do Firestore:
+    // ── FORM SUBMIT ────────────────────────────────────────
+    document.getElementById('contactForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-1. [console.firebase.google.com](https://console.firebase.google.com) → projeto `formcontato-90129`
-2. **Firestore Database → Regras**
-3. Confirme que está assim:
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}
+      const form    = this;
+      const btn     = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnSpin = document.getElementById('btnSpinner');
+
+      form.classList.add('was-validated');
+      if (!form.checkValidity()) return;
+
+      btn.disabled = true;
+      btnText.classList.add('d-none');
+      btnSpin.classList.remove('d-none');
+
+      try {
+        await db.collection('contacts').add({
+          firstName: document.getElementById('firstName').value.trim(),
+          lastName:  document.getElementById('lastName').value.trim(),
+          cep:       document.getElementById('cep').value.trim(),
+          number:    document.getElementById('number').value.trim(),
+          comments:  document.getElementById('comments').value.trim(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast('Mensagem enviada com sucesso! Em breve retornaremos. 🎉', true);
+        form.reset();
+        form.classList.remove('was-validated');
+
+      } catch (err) {
+        console.error('Firestore error:', err);
+        showToast('Erro ao enviar: ' + err.message, false);
+      } finally {
+        btn.disabled = false;
+        btnText.classList.remove('d-none');
+        btnSpin.classList.add('d-none');
+      }
+    });
+  </script>
+
 </body>
 </html>
