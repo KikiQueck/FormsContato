@@ -20,7 +20,6 @@
       --text-dark: #4a2030;
       --text-mid:  #7a4055;
       --text-soft: #b07080;
-      --gold: #c97a8a;
       --glass: rgba(255,255,255,0.55);
       --glass-border: rgba(255,180,195,0.45);
       --shadow: 0 24px 64px rgba(200,100,120,0.18);
@@ -133,7 +132,6 @@
     .card-subtitle {
       margin-top: 10px;
       font-size: .9rem;
-      font-weight: 400;
       color: var(--text-mid);
       letter-spacing: .02em;
     }
@@ -231,7 +229,7 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 8px 28px rgba(232,96,122,.3);
-      transition: transform .2s, box-shadow .2s;
+      transition: transform .2s, box-shadow .2s, opacity .2s;
       margin-top: 10px;
     }
     .btn-submit::before {
@@ -242,9 +240,10 @@
       opacity: 0;
       transition: opacity .25s;
     }
-    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(232,96,122,.38); }
-    .btn-submit:hover::before { opacity: 1; }
+    .btn-submit:not(:disabled):hover  { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(232,96,122,.38); }
+    .btn-submit:not(:disabled):hover::before { opacity: 1; }
     .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-submit .spinner-border { width: 1.1rem; height: 1.1rem; border-width: 2px; }
 
     .toast-container { z-index: 9999; }
@@ -267,7 +266,7 @@
 </head>
 <body>
 
-  <!-- Toast container -->
+  <!-- Toast -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="liveToast" class="toast toast-custom align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
       <div class="d-flex align-items-center gap-3 p-3">
@@ -336,7 +335,8 @@
           <i class="bi bi-chat-dots-fill" style="top:20px;transform:none"></i>
         </div>
 
-        <button type="submit" class="btn-submit mt-3" id="submitBtn">
+        <!-- Botão começa desabilitado até o Firebase estar pronto -->
+        <button type="submit" class="btn-submit mt-3" id="submitBtn" disabled>
           <span id="btnText"><i class="bi bi-send-fill me-2"></i>Enviar Mensagem</span>
           <span id="btnSpinner" class="d-none">
             <span class="spinner-border me-2" role="status"></span>Enviando…
@@ -347,7 +347,7 @@
     </div>
   </div>
 
-  <!-- Bootstrap 5 JS -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Firebase SDK (compat) -->
@@ -355,26 +355,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
-    // ── FIREBASE INIT ──────────────────────────────────────
-    firebase.initializeApp({
-      apiKey:            "AIzaSyAwRRxzbhptvZVdqrt6qEVVxgBV-vYm7hM",
-      authDomain:        "formcontato-90129.firebaseapp.com",
-      projectId:         "formcontato-90129",
-      storageBucket:     "formcontato-90129.firebasestorage.app",
-      messagingSenderId: "273438604324",
-      appId:             "1:273438604324:web:ac5cba74c03f0b21c06cb1"
-    });
+    let db = null;
 
-    const db = firebase.firestore();
-
-    // ── CEP MASK ───────────────────────────────────────────
-    document.getElementById('cep').addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 8);
-      if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
-      this.value = v;
-    });
-
-    // ── TOAST HELPER ───────────────────────────────────────
+    // ── TOAST ──────────────────────────────────────────────
     function showToast(msg, success) {
       const el   = document.getElementById('liveToast');
       const icon = document.getElementById('toastIcon');
@@ -386,7 +369,35 @@
       bootstrap.Toast.getOrCreateInstance(el).show();
     }
 
-    // ── FORM SUBMIT ────────────────────────────────────────
+    // ── CEP MASK ───────────────────────────────────────────
+    document.getElementById('cep').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+      this.value = v;
+    });
+
+    // ── INIT FIREBASE via /api/firebaseConfig ──────────────
+    // Usamos IIFE async para aguardar o fetch antes de habilitar o botão
+    (async function () {
+      const btn = document.getElementById('submitBtn');
+      try {
+        const res = await fetch('/api/firebaseConfig');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        const config = await res.json();
+        firebase.initializeApp(config);
+        db = firebase.firestore();
+
+        btn.disabled = false; // ✅ Habilita somente aqui
+
+      } catch (err) {
+        console.error('Falha ao carregar Firebase:', err);
+        showToast('Falha ao conectar com o servidor. Recarregue a página.', false);
+        // botão permanece desabilitado
+      }
+    })();
+
+    // ── SUBMIT ─────────────────────────────────────────────
     document.getElementById('contactForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -397,6 +408,11 @@
 
       form.classList.add('was-validated');
       if (!form.checkValidity()) return;
+
+      if (!db) {
+        showToast('Firebase não inicializado. Recarregue a página.', false);
+        return;
+      }
 
       btn.disabled = true;
       btnText.classList.add('d-none');
