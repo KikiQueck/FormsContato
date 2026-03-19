@@ -396,21 +396,20 @@
   let db = null;
   let firebaseReady = false; // 👈 flag de controle
 
-  async function initFirebase() {
-    try {
-      const res = await fetch('/api/firebaseConfig');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const firebaseConfig = await res.json();
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      firebaseReady = true; // 👈 marca como pronto
-    } catch (err) {
-      console.error('Falha ao carregar configuração do Firebase:', err);
-      showToast('Erro ao conectar com o servidor. Tente novamente.', false);
-      // Reabilita o botão se falhar na inicialização
-      document.getElementById('submitBtn').disabled = false;
-    }
+async function initFirebase() {
+  try {
+    const res = await fetch('/api/firebaseConfig');
+    console.log('Status da resposta:', res.status);
+    const firebaseConfig = await res.json();
+    console.log('Config recebida:', firebaseConfig); // 👈 veja o que chega
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    firebaseReady = true;
+  } catch (err) {
+    console.error('Erro detalhado:', err); // 👈 erro real aqui
+    ...
   }
+}
 
   /* ── CEP MASK ────────────────────────────────────────── */
   document.getElementById('cep').addEventListener('input', function () {
